@@ -83,8 +83,31 @@ SITE_URL=https://example.com node build.mjs
 
 名字 2026-10-22 定稿：二十四格 / 24frames。一秒钟拆成 24 格，每一格都得有名字——这正是这件事本身。
 
-英文 24frames 对应主域 24frames.art（24frames.cn 已被他人注册，但面向创作者的读者不按中文域名搜，不构成障碍）。**域名尚未购买**：这个站不靠域名活着，纯静态托管即可拿到可访问网址，先跑起来再说。目录名 2026-10-23 已改为 `24frames`（原 `xiangwai`）。
+英文 24frames 对应主域 24frames.art（24frames.cn 已被他人注册，但面向创作者的读者不按中文域名搜，不构成障碍）。**部署**：域名 24frames.art 已购（DNSPod 注册）。站点托管在 Cloudflare Pages（项目名 `24frames`，经典 Pages，不是 Workers），地址 https://24frames.pages.dev 。更新上线：
+
+```bash
+cd web && npm test && SITE_URL=https://24frames.art npm run build
+npx -y wrangler@4 pages deploy out --project-name 24frames --branch main
+```
+
+wrangler 登录需要 `pages:write` 权限：`npx -y wrangler@4 login --scopes account:read user:read pages:write zone:read`。
+
+**自定义域名**：`24frames.art` 与 `www.24frames.art` 已绑定（2026-10-23），DNS 仍在 DNSPod：两条 CNAME（`@` 和 `www`）指向 `24frames.pages.dev`。注意：在 Cloudflare 控制台里给 Pages 加根域名，会强制要求把 DNS 转到 Cloudflare；改用 API 添加就不需要，Cloudflare 靠那条 CNAME 验证并签发证书：
+
+```bash
+TOKEN=$(grep '^oauth_token' ~/Library/Preferences/.wrangler/config/default.toml | sed -E 's/^oauth_token = "(.*)"/\1/')
+curl -X POST "https://api.cloudflare.com/client/v4/accounts/<账户 ID>/pages/projects/24frames/domains" \
+  -H "Authorization: Bearer $TOKEN" -H "Content-Type: application/json" --data '{"name":"新域名"}'
+```
+
+目录名 2026-10-23 已改为 `24frames`（原 `xiangwai`）。
 
 ## 版权
 
-条目文字与提示词模板自写，未逐字引用他人原文。未声明开源许可；成批转载或引用请先问一声。
+## 许可
+
+代码（`web/`、`build.mjs`、`src/*.js` 等程序部分）采用 Apache License 2.0，见 [LICENSE](LICENSE)。
+
+条目文案（术语名称、一句话说明、提示词模板、容易翻车、参数建议等）采用 CC BY-NC-SA 4.0，**禁止商业使用**，见 [LICENSE-CONTENT.md](LICENSE-CONTENT.md)。
+
+条目文字与提示词模板自写，未逐字引用他人原文。商业使用或成批转载请先联系 shafreeck@gmail.com。
