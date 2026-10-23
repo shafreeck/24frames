@@ -1,0 +1,170 @@
+/* 二十四格 — 海报瀑布流版式层
+   一张卡片＝一张海报。不改 src/style.css 的选择器，只覆盖首页条目的版式。
+   筛选仍是 app.js 的那套：卡片带 data-item / data-media / data-dim / data-hay。 */
+
+/* 站内导航 #video / #image 的落点（瀑布流里没有媒体块了，用空锚占位） */
+.wall-anchor {
+  display: block;
+  height: 0;
+  scroll-margin-top: 120px;
+}
+
+.wall {
+  column-gap: 14px;
+  column-width: 216px;
+  padding: 10px 0 20px;
+}
+
+.poster {
+  --hue: 210;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  break-inside: avoid;
+  -webkit-column-break-inside: avoid;
+  page-break-inside: avoid;
+  margin: 0 0 14px;
+  min-height: var(--ph, 380px);
+  padding: 14px 15px 13px;
+  border: 1px solid var(--line, #262a33);
+  border-radius: 10px;
+  background: #16181d;
+  background:
+    linear-gradient(
+      158deg,
+      hsl(var(--hue) 38% 17%) 0%,
+      hsl(var(--hue) 26% 11%) 52%,
+      hsl(var(--hue) 22% 8%) 100%
+    );
+  overflow: hidden;
+  isolation: isolate;
+  transition: transform .16s ease, border-color .16s ease, box-shadow .16s ease;
+}
+
+.poster:hover,
+.poster:focus-visible {
+  transform: translateY(-2px);
+  border-color: hsl(var(--hue) 45% 42%);
+  box-shadow: 0 12px 26px rgba(0, 0, 0, .45);
+}
+
+/* 印刷网点的暗示：极淡的横向扫描纹，纯装饰 */
+.p-scan {
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  background-image: repeating-linear-gradient(
+    0deg,
+    rgba(255, 255, 255, .05) 0 1px,
+    rgba(255, 255, 255, 0) 1px 3px
+  );
+  opacity: .5;
+  pointer-events: none;
+}
+
+/* 再压一层斜向高光，让同一色相的海报也不至于平 */
+.poster::after {
+  content: "";
+  position: absolute;
+  inset: -40% -30% auto auto;
+  width: 70%;
+  height: 70%;
+  z-index: -1;
+  background: radial-gradient(closest-side, hsla(var(--hue), 60%, 60%, .16), transparent);
+  pointer-events: none;
+}
+
+.poster span { display: block; }
+
+.p-top {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 8px;
+  font-family: var(--font-mono, ui-monospace, monospace);
+  font-size: 10.5px;
+  letter-spacing: .16em;
+  text-transform: uppercase;
+  color: hsl(var(--hue) 30% 76%);
+  opacity: .85;
+}
+
+.p-no { font-variant-numeric: tabular-nums; }
+
+/* 标题紧接编号，留白放在正文与页脚之间，避免标题上方挂一大片空白 */
+.p-mid { margin-top: 2px; }
+
+.p-zh {
+  font-size: 27px;
+  line-height: 1.12;
+  font-weight: 650;
+  letter-spacing: .02em;
+  color: #f2f3f5;
+  text-wrap: balance;
+}
+
+.p-en {
+  margin-top: 6px;
+  font-size: 11.5px;
+  line-height: 1.35;
+  letter-spacing: .07em;
+  color: hsl(var(--hue) 40% 72%);
+  word-break: break-word;
+}
+
+.p-one {
+  font-size: 12.5px;
+  line-height: 1.6;
+  color: rgba(232, 233, 236, .72);
+  display: -webkit-box;
+  -webkit-line-clamp: 5;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.p-foot {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  margin-top: auto;
+  padding-top: 9px;
+  border-top: 1px solid rgba(255, 255, 255, .09);
+  font-size: 11px;
+  letter-spacing: .05em;
+  color: rgba(232, 233, 236, .55);
+}
+
+.p-media {
+  padding: 1px 6px;
+  border: 1px solid rgba(255, 255, 255, .16);
+  border-radius: 999px;
+  font-size: 10.5px;
+}
+
+.p-group { opacity: .9; }
+
+/* 桌面宽屏：栏数由 column-width 决定，不必再写死 */
+@media (min-width: 1060px) {
+  .wall { column-width: 232px; }
+}
+
+@media (max-width: 640px) {
+  .wall { column-width: 148px; column-gap: 10px; }
+  .poster { min-height: calc(var(--ph, 320px) * .85); padding: 11px 12px 10px; border-radius: 8px; margin-bottom: 10px; }
+  .p-zh { font-size: 20px; }
+  .p-en { font-size: 10.5px; }
+  .p-one { font-size: 11.5px; -webkit-line-clamp: 4; }
+  .p-top { font-size: 9.5px; letter-spacing: .1em; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .poster { transition: none; }
+  .poster:hover, .poster:focus-visible { transform: none; }
+}
+
+@media print {
+  .wall { column-width: 170px; }
+  .poster { break-inside: avoid; box-shadow: none; }
+}

@@ -1,0 +1,88 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>关于与更新｜二十四格 24frames</title>
+<meta name="description" content="二十四格是什么、为什么做、现在有什么、明确没做什么，以及如何更新内容。">
+<meta name="color-scheme" content="dark">
+<meta name="theme-color" content="#0e0f12">
+<meta property="og:type" content="website">
+<meta property="og:title" content="关于与更新｜二十四格 24frames">
+<meta property="og:description" content="二十四格是什么、为什么做、现在有什么、明确没做什么，以及如何更新内容。">
+<meta property="og:site_name" content="二十四格 24frames">
+<meta property="og:locale" content="zh_CN">
+<link rel="stylesheet" href="assets/style.ed43b0e96d.css">
+</head>
+<body>
+<a class="skip" href="#main">跳到正文</a>
+<header class="site-head"><div class="wrap head-inner">
+  <a class="brand" href="/"><span class="brand-zh">二十四格</span><span class="brand-en">24frames</span></a>
+  <nav class="site-nav">
+      <a href="/">全部</a>
+      <a href="/#video">视频</a>
+      <a href="/#image">图片</a>
+      <a href="reference.html">速查表</a>
+      <a href="about.html" aria-current="page">关于</a>
+  </nav>
+</div></header>
+<main id="main">
+<div class="wrap">
+    <article class="prose">
+      <h1>关于这个站</h1>
+      <p><strong>二十四格</strong>：一秒钟拆成 24 格，每一格都得有名字。</p>
+
+      <h2>怎么用</h2>
+      <ol class="steps">
+        <li><h3>说人话搜</h3><p>搜「绕着人转一圈」也能命中「环绕」；搜 dolly、push in 同样命中，不用先知道术语。</p></li>
+        <li><h3>先看它到底在做什么</h3><p>每条先给一句人话，再说专业叫法。推轨和变焦不是一回事，混着写就会变形。</p></li>
+        <li><h3>复制模板</h3><p>中英两版，直接粘进可灵、即梦、Runway、Sora 这类工具，再按你的场景改主体。</p></li>
+        <li><h3>最后看翻车点</h3><p>每个词最容易错在哪、要写明哪一句才不塌，都列在「容易翻车」里。</p></li>
+      </ol>
+
+      <h2>为什么叫这个</h2>
+      <p>24 格是一秒的帧率，也是电影最朴素的计量单位。做 AI 影像时，你要控制的正是一格一格发生的事：镜头怎么动、光怎么落、这一段该停几秒。名字取这个，是因为它说的不是「我看过很多片子」，而是「这一格拍什么」。</p>
+
+      <h2>要解决的问题</h2>
+      <p>一个人现在可以做出一部片子：编剧、导演、摄影，都靠提示词驱动 AI。但非专业的人真正缺的不是技能——不需要先去学摄影和导演——而是<strong>词</strong>。普通人不知道那个运镜叫什么，就没法让 AI 精确还原；这和零基础学编程的人不知道前端、后端、数据库、导航栏分别指什么，是同一件事。</p>
+      <p>这个站只压缩这一段：从「说不清的画面」到「一个 AI 听得懂的词」。所以每条都先给一句人话，再给专业叫法，再给中英模板，最后给最容易翻车的地方。</p>
+
+      <h2>现在有什么</h2>
+      <ul>
+        <li>82 条视频 + 41 条图片，覆盖 12 个维度（运镜、景别、镜头、光线、色彩、构图、质感、节奏、转场、声音、流派、风格），每条含：中英术语、一句话、什么时候用、中英文提示词模板、容易翻车、参数建议。</li>
+        <li>中英混搜（「绕着人转」和 dolly 都能搜到）、按「视频/图片」与维度两级筛选、一键复制模板。</li>
+        <li>每条一个独立静态页，可被搜索引擎索引、可直接分享链接。</li>
+        <li>纯静态：无账号、无后端、无第三方脚本、无追踪、无广告。</li>
+      </ul>
+
+      <h2>明确没做的</h2>
+      <ul>
+        <li><strong>出片示例还没有。</strong>要有真实生成素材才有说服力，编一个「示意图」是骗人的，所以先空着。</li>
+        <li><strong>提示词未逐条真机验证。</strong>模板按生成模型的常见表现写，「容易翻车」来自经验判断，不是官方限制。你实际跑出来不一样，是对的，不是你的错。</li>
+        <li>没有按模型分版本（可灵 / 即梦 / Runway / Sora 的写法差异）。现在只有中英两版通用模板。</li>
+        <li>没有收藏、投稿、评论、付费。</li>
+      </ul>
+
+      <h2>内容怎么改</h2>
+      <p>内容只有一处：<code>src/data.js</code>。页面全部由构建脚本生成，改数据不改模板。</p>
+      <pre>node build.mjs
+# 本地预览
+python3 -m http.server 18766 --bind 127.0.0.1</pre>
+      <p>站点样式在 <code>src/style.css</code>，交互在 <code>src/app.js</code>，产物是根目录的 <code>index.html</code>、<code>reference.html</code>、<code>term/</code> 与 <code>assets/</code>。</p>
+
+      <h2>名字与域名</h2>
+      <p>英文写作 24frames。域名暂未购买——这个站不靠域名活着，先有内容再说。项目目录名 <code>24frames</code>。</p>
+
+      <h2>版权</h2>
+      <p>所有条目文字与提示词模板为自写，未逐字引用他人原文。目前未声明开源许可；要转载或引用成批内容，请先问一声。</p>
+    </article>
+  </div>
+</main>
+<footer class="site-foot"><div class="wrap">
+  <p><strong>二十四格 / 24frames</strong>：一秒钟拆成 24 格，每一格都得有名字。这里收的是 AI 影像里那些本来就有名字的运镜与风格。</p>
+  <p>提示词模板按生成模型的常见表现自写，<strong>尚未逐条真机出片验证</strong>；「容易翻车」是经验判断，不是官方限制。示例素材一律自制，不引用院线片段。</p>
+  <p class="foot-links"><a href="reference.html">术语速查表</a> · <a href="about.html">关于与更新</a> · 无账号、无后端、无追踪</p>
+</div></footer>
+<script src="assets/app.368201f2e6.js" defer></script>
+</body>
+</html>
