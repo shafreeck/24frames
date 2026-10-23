@@ -68,18 +68,33 @@ const DIM = {
   sound: { label: '声音' },
   genre: { label: '流派' },
   style: { label: '风格' },
+  ai: { label: 'AI 制作' },
+  story: { label: '编剧' },
+  direct: { label: '导演' },
 };
 
-const MEDIA = { video: '视频', image: '图片' };
+const MEDIA = { video: '视频', image: '图片', plan: '编导' };
 
 const DIM_ORDER = {
-  video: ['move', 'shot', 'lens', 'light', 'color', 'comp', 'texture', 'tempo', 'cut', 'sound', 'genre', 'style'],
-  image: ['comp', 'light', 'color', 'lens', 'shot', 'texture', 'genre', 'style'],
+  video: ['move', 'shot', 'lens', 'light', 'color', 'comp', 'texture', 'tempo', 'cut', 'sound', 'genre', 'style', 'ai'],
+  image: ['comp', 'light', 'color', 'lens', 'shot', 'texture', 'genre', 'style', 'ai'],
+  plan: ['story', 'direct'],
 };
 
 /* 口语别名：页面承诺「搜『绕着人转一圈』也能命中『环绕』」。
    这些词只进 hay（检索用），不进任何可见文案，也不改变术语本身。 */
 const ALIAS = {
+  'story-logline': ['故事梗概', '一句话故事', '故事核'],
+  'story-hook': ['开头', '黄金三秒', '前三秒', '抓人'],
+  'story-cliffhanger': ['下集预告', '留悬念', '断章'],
+  'dir-shot-list': ['分镜', '分镜头脚本', '拍摄清单', '分镜脚本'],
+  'dir-180-rule': ['越轴', '对话机位', '左右反了'],
+  'dir-shot-reverse': ['对话镜头', '两人对话', '来回切'],
+  'ai-consistency': ['人物一致', '同一个人', '脸不一样', '换脸', '角色统一'],
+  'ai-i2v': ['图片变视频', '让图片动起来', '首帧'],
+  'ai-lipsync': ['口型', '说话', '配音对嘴'],
+  'img-ai-char-sheet': ['三视图', '人设图', '角色三视图'],
+  'img-ai-inpaint': ['局部修改', '修手', '改一部分'],
   orbit: ['绕着人转', '绕一圈', '转一圈', '转圈', '绕人一圈', '环绕镜头'],
   'rise-orbit': ['边升边转', '升起来转一圈', '往上绕'],
   'dolly-in': ['推近', '推进', '往前推', '推镜头', '靠近'],
@@ -283,7 +298,7 @@ function buildItems(data) {
     const i = GROUP_ORDER.indexOf(g);
     return i < 0 ? GROUP_ORDER.length : i;
   };
-  const mediaRank = (m) => (m === 'video' ? 0 : 1);
+  const mediaRank = (m) => { const i = Object.keys(MEDIA).indexOf(m); return i < 0 ? 9 : i; };
   items.sort((a, b) =>
     mediaRank(a.media) - mediaRank(b.media) ||
     dimRank(a.media)(a.dim) - dimRank(b.media)(b.dim) ||
@@ -416,6 +431,7 @@ function block(it, uid) {
    所以 app.js 的筛选逻辑不需要为版式改动。 */
 const POSTER_H = [320, 240, 360, 260, 300, 220];
 const DIM_HUE = {
+  story: 52, direct: 12, ai: 176,
   move: 24, shot: 205, lens: 268, light: 44, color: 332, comp: 158,
   texture: 18, tempo: 296, cut: 190, sound: 214, genre: 282, style: 0,
 };

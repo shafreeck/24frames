@@ -126,12 +126,12 @@ window.MZ_DATA_EXTRA = (window.MZ_DATA_EXTRA || []).concat([
    params:"留一点方向性；眼睛要有高光点。"},
 
   {id:"light-golden", media:"video", dim:"light", group:"基础", zh:"黄金时刻", en:"Golden Hour",
-   one:"日出后或日落前那二三十分钟的低角度暖光。",
+   one:"日出后或日落前约一小时的低角度暖光。",
    when:"人物抒情、风景空镜、结尾留白。",
    promptZh:"黄金时刻拍摄，低角度暖色阳光斜射，长而柔的阴影，空气中有轻微金色的雾感。",
    promptEn:"golden hour, low warm sunlight raking across the scene, long soft shadows, faint golden haze in the air.",
    fail:["暖到橙红过饱和，像加了滤镜。","阳光角度写成顶光，失去斜射长影。"],
-   params:"明确低角度与长阴影；时长窗口只有二十来分钟。"},
+   params:"明确低角度与长阴影；太阳越低越暖，最好的窗口通常不到一小时。"},
 
   {id:"light-neon", media:"video", dim:"light", group:"进阶", zh:"霓虹实景", en:"Practical Neon",
    one:"招牌与灯箱本身就是主光，颜色从环境里来。",
@@ -177,7 +177,7 @@ window.MZ_DATA_EXTRA = (window.MZ_DATA_EXTRA || []).concat([
   {id:"color-monochrome", media:"video", dim:"color", group:"进阶", zh:"单色调", en:"Monochrome Grade",
    one:"整幅只留一种色相，靠明度分层。",
    when:"统一气氛、风格化短片、把注意力交给形状。",
-   promptZh:"单色调整，全画面只保留一种色相（如青蓝或琥珀），靠明暗层次区分前后景，无其他颜色。",
+   promptZh:"单色调，全画面只保留一种色相（如青蓝或琥珀），靠明暗层次区分前后景，无其他颜色。",
    promptEn:"monochrome grade in a single hue such as cyan or amber, depth read through luminance only, no other colors present.",
    fail:["加了第二种色，单色不成立。","全画面同一明度，前后景粘在一起。"],
    params:"先用明度把层次做出来，再染色。"},
@@ -271,7 +271,7 @@ window.MZ_DATA_EXTRA = (window.MZ_DATA_EXTRA || []).concat([
    promptZh:"单一长镜头持续拍摄，不切换不加剪辑点，机位有克制的运动，人物走位与时间在画面内连续。",
    promptEn:"single continuous take with no cuts, restrained camera movement, blocking and time flowing continuously within the frame.",
    fail:["AI 在长镜头中途换人换景。","写长镜头又要求多角度，自相矛盾。"],
-   params:"一条 5 至 10 秒；超长段落必须分段拼接。"},
+   params:"目前多数模型单条 5 至 10 秒；更长的一镜到底要用尾帧续写分段拼接。"},
 
   {id:"tempo-fast-cut", media:"video", dim:"tempo", group:"基础", zh:"快切", en:"Fast Cutting",
    one:"每个镜头一两秒甚至更短，靠密度推情绪。",
@@ -338,8 +338,8 @@ window.MZ_DATA_EXTRA = (window.MZ_DATA_EXTRA || []).concat([
    fail:["每场都淡，整体节奏拖沓。","黑场太短变成闪烁。"],
    params:"黑场停留 0.5 至 1 秒；一场最多用一次。"},
 
-  {id:"cut-occlusion", media:"video", dim:"cut", group:"进阶", zh:"遮挡转场", en:"Occlusion / Whip Transition",
-   one:"前景物体扫过镜头把画面遮住，借机换场。",
+  {id:"cut-occlusion", media:"video", dim:"cut", group:"进阶", zh:"遮挡转场", en:"Occlusion Transition / Hidden Cut",
+   one:"前景物体扫过镜头把画面遮住，借遮满的那一帧换场；和运镜里的「前景遮挡转场」是同一招的剪辑视角。",
    when:"连续空间里的场景跳转、需要藏起剪辑点。",
    promptZh:"前景有一人肩背、车门或墙面快速扫过镜头并短暂遮满画面，随后出现新场景，切换点被遮挡隐藏。",
    promptEn:"a foreground element such as a shoulder, car door, or wall sweeps across and briefly fills the frame, then a new scene appears, hiding the cut.",

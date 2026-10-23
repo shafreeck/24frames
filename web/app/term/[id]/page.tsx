@@ -1,9 +1,11 @@
 import type {Metadata} from 'next';
 import type {ReactNode} from 'react';
 import {notFound} from 'next/navigation';
-import {getItems,SITE_NAME} from '../../../lib/content';
+import {getItems,SITE_NAME,DIM_ORDER} from '../../../lib/content';
+import {ComboButton} from '../../../components/Combo';
 import CopyButton from '../../../components/CopyButton';
-import ShotArt,{demoNote} from '../../../components/ShotArt';
+import ShotArt from '../../../components/ShotArt';
+import {demoNote} from '../../../components/demo';
 
 type Props={params:Promise<{id:string}>};
 type Section={key:string;title:string;body:ReactNode;action?:ReactNode};
@@ -46,16 +48,20 @@ export default async function Term({params}:Props){
     action:<CopyButton english text={it.promptEn}/>,
     body:<pre className="td-pre td-pre--en">{it.promptEn}</pre>,
   });
-  if(it.fail.length)sections.push({key:'fail',title:'容易翻车',body:<ul className="td-fail">{it.fail.map(f=><li key={f}>{f}</li>)}</ul>});
-  if(it.params)sections.push({key:'params',title:'参数建议',body:<p>{it.params}</p>});
   if(it.demoPrompt)sections.push({
-    key:'demo',title:'样例提示词 · 直接生成视频',
-    action:<CopyButton text={it.demoPrompt}/>,
+    key:'demo',title:(it.dim==='story'||it.id==='dir-shot-list')?'样例提示词 · 直接问对话模型':`样例提示词 · 直接生成${it.media==='image'?'图片':'视频'}`,
+    action:<CopyButton text={it.demoPrompt} label="复制样例"/>,
     body:<>
-      <p className="td-note">镜头运动在最前，后面带场景、动作、表演与一句台词；复制后直接投给视频模型，成片即本条的样例。</p>
+      <p className="td-note">{(it.dim==='story'||it.id==='dir-shot-list')
+        ?'这一条是写给 ChatGPT、Claude、豆包这类对话模型的：把方括号里的想法换成你自己的，它会帮你写故事、改剧本。'
+        :it.media==='image'
+        ?'本条技法写在最前，后面是具体的主体、场景、细节与画幅；复制后直接投给图片模型，把主体换成你自己的即可。'
+        :'本条技法写在最前，后面带场景、动作、表演与时长；复制后直接投给视频模型，把人物和情节换成你自己的即可。'}</p>
       <pre className="td-pre">{it.demoPrompt}</pre>
     </>,
   });
+  if(it.fail.length)sections.push({key:'fail',title:'容易翻车',body:<ul className="td-fail">{it.fail.map(f=><li key={f}>{f}</li>)}</ul>});
+  if(it.params)sections.push({key:'params',title:'参数建议',body:<p>{it.params}</p>});
 
   const ld={
     '@context':'https://schema.org',
@@ -95,16 +101,19 @@ export default async function Term({params}:Props){
         <dl className="td-spec">
           <div><dt>类别</dt><dd>{it.dimLabel}</dd></div>
           <div><dt>分组</dt><dd>{it.group}</dd></div>
-          <div><dt>关键词</dt><dd>{it.keywords.length} 个</dd></div>
+          {it.keywords.length?<div><dt>关键词</dt><dd>{it.keywords.length} 个</dd></div>:<div><dt>介质</dt><dd>{it.mediaLabel}</dd></div>}
           <div><dt>全库</dt><dd>{pad(index+1)} / {pad(all.length)}</dd></div>
         </dl>
 
         <div className="td-actions">
           {it.promptZh&&<CopyButton primary text={it.promptZh}/>}
           {it.promptEn&&<CopyButton english text={it.promptEn}/>}
-          <a className="btn" href={`/#${it.media}`}>回到{it.mediaLabel}总表</a>
+          {!['story','direct','ai'].includes(it.dim)&&<ComboButton pick={{id:it.id,zh:it.zh,en:it.en,dim:it.dim,dimLabel:it.dimLabel,media:it.media,mediaLabel:it.mediaLabel,promptZh:it.promptZh,promptEn:it.promptEn,rank:(DIM_ORDER[it.media]||[]).indexOf(it.dim)}}/>}
         </div>
 
+        {['story','direct','ai'].includes(it.dim)
+          ?<p className="td-fine td-howto">这是做片子的一个步骤，不是画面技法；完整流程见 <a href="/learn">从零做一部 AI 短片</a>。</p>
+          :<p className="td-fine td-howto">想把它和别的技法（景别、光线、风格……）拼成一条完整提示词？点「加入组合」，再去其他条目里各挑一个。</p>}
         <p className="td-fine">提示词模板按生成模型的常见表现自写，尚未逐条真机出片验证；「容易翻车」是经验判断，不是官方限制。</p>
       </div>
     </div>

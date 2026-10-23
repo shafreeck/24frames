@@ -31,14 +31,14 @@ function timing({v, kt, d = D, ease = true, discrete, begin}: AnimOpts) {
     repeatCount: 'indefinite',
     begin,
     calcMode,
-    keySplines: calcMode === 'spline' ? Array(k - 1).fill(ease === true ? EASE : ease).join(';') : undefined,
+    keySplines: calcMode === 'spline' ? (typeof ease === 'string' && ease.includes(';') ? ease : Array(k - 1).fill(ease === true ? EASE : ease).join(';')) : undefined,
   };
 }
 
 /** 属性动画 */
 export const A = ({a, ...o}: AnimOpts & {a: string}) => <animate attributeName={a} {...timing(o)} />;
 /** 变换动画；additive 叠加到已有 transform 上 */
-export const T = ({type, sum, ...o}: AnimOpts & {type: 'translate' | 'scale' | 'rotate' | 'skewX'; sum?: boolean}) => (
+export const T = ({type, sum, ...o}: AnimOpts & {type: 'translate' | 'scale' | 'rotate' | 'skewX' | 'skewY'; sum?: boolean}) => (
   <animateTransform attributeName="transform" type={type} additive={sum ? 'sum' : undefined} {...timing(o)} />
 );
 
@@ -184,18 +184,20 @@ const rnd = (seed: number) => () => ((seed = (seed * 9301 + 49297) % 233280) / 2
 /** 城市天际线，带窗格 */
 export function Skyline({x, w, base, seed = 3, hMin = 26, hMax = 78, lit = 0.28}: {x: number; w: number; base: number; seed?: number; hMin?: number; hMax?: number; lit?: number}) {
   const r = rnd(seed);
+  // 楼体各自一个 rect，天线并成一条 path，所有窗格并成一条 path——窗格成百上千，逐个 rect 会把页面撑到几 MB
   const out: ReactNode[] = [];
-  let cx = x, i = 0;
+  let cx = x, i = 0, ant = '', win = '';
+  const f = (v: number) => +v.toFixed(1);
   while (cx < x + w) {
     const bw = 12 + Math.round(r() * 20), bh = hMin + Math.round(r() * (hMax - hMin));
     const top = base - bh;
-    out.push(<rect key={`b${i}`} className="sa-bld" x={cx} y={top} width={bw} height={bh} />);
-    if (r() > 0.6) out.push(<path key={`a${i}`} className="sa-soft" d={`M${cx + bw / 2} ${top} L${cx + bw / 2} ${top - 6 - r() * 8}`} />);
+    out.push(<rect key={i} className="sa-bld" x={cx} y={top} width={bw} height={bh} />);
+    if (r() > 0.6) ant += `M${f(cx + bw / 2)} ${top}v${f(-6 - r() * 8)}`;
     for (let wy = top + 5; wy < base - 4; wy += 6) for (let wx = cx + 3; wx < cx + bw - 3; wx += 4.5)
-      if (r() < lit) out.push(<rect key={`w${i}-${wx}-${wy}`} className="sa-win" x={wx} y={wy} width={1.8} height={2.4} />);
+      if (r() < lit) win += `M${f(wx)} ${wy}h1.8v2.4h-1.8z`;
     cx += bw + 1 + Math.round(r() * 3); i++;
   }
-  return <g>{out}</g>;
+  return <g>{out}{ant && <path className="sa-soft" d={ant} />}{win && <path className="sa-win" d={win} />}</g>;
 }
 
 /** 层叠山脊 */
@@ -253,7 +255,7 @@ export function Floor({vx = W / 2, vy, y0, n: k = 9, spread = 1.4, rows = 5}: {v
     lines.push(<path key={`r${i}`} className="sa-faint" d={`M${vx + t * 20} ${y0} L${vx + t * W * spread * 1.6} ${H + 40}`} />);
   }
   for (let j = 1; j <= rows; j++) {
-    const yy = y0 + (H + 20 - y0) * Math.pow(j / rows, 1.8);
+    const yy = +(y0 + (H + 20 - y0) * Math.pow(j / rows, 1.8)).toFixed(2);
     lines.push(<path key={`c${j}`} className="sa-faint" d={`M-40 ${yy} L${W + 40} ${yy}`} />);
   }
   void vy;
@@ -271,7 +273,7 @@ export function CamTop({fov = 24, len = 26, wedge = true}: {fov?: number; len?: 
   const r = (fov * Math.PI) / 180;
   return (
     <g>
-      {wedge && <path className="sa-fov" d={`M0 -4 L${-Math.tan(r) * len} ${-4 - len} L${Math.tan(r) * len} ${-4 - len} Z`} />}
+      {wedge && <path className="sa-fov" d={`M0 -4 L${(-Math.tan(r) * len).toFixed(2)} ${-4 - len} L${(Math.tan(r) * len).toFixed(2)} ${-4 - len} Z`} />}
       <rect className="sa-cam" x={-3.6} y={-1} width={7.2} height={8} rx={1} />
       <rect className="sa-cam" x={-2.2} y={-4.4} width={4.4} height={3.6} rx={0.6} />
     </g>
@@ -326,15 +328,16 @@ export function Timeline({y = 162, x0 = 24, x1 = 296, cuts, d = D, label}: {y?: 
   );
 }
 
-/** 共用滤镜：每个 svg 一份，id 用 u 前缀避免页面内冲突 */
-export function Defs({u}: {u: string}) {
+/** 共用滤镜：整页只放一份（layout 里），各张线稿用固定 id 引用，避免每张 SVG 重复携带 */
+export function SharedDefs() {
   return (
-    <defs>
-      <filter id={`${u}-b1`} x="-20%" y="-20%" width="140%" height="140%"><feGaussianBlur stdDeviation="1.2" /></filter>
-      <filter id={`${u}-b3`} x="-30%" y="-30%" width="160%" height="160%"><feGaussianBlur stdDeviation="3" /></filter>
-      <filter id={`${u}-glow`} x="-50%" y="-50%" width="200%" height="200%"><feGaussianBlur stdDeviation="2.4" result="b" /><feMerge><feMergeNode in="b" /><feMergeNode in="SourceGraphic" /></feMerge></filter>
-      <linearGradient id={`${u}-v`} x1="0" y1="0" x2="0" y2="1"><stop offset="0" stopColor="#000" stopOpacity="0" /><stop offset="1" stopColor="#000" stopOpacity=".55" /></linearGradient>
-      <radialGradient id={`${u}-vig`} cx=".5" cy=".5" r=".75"><stop offset=".55" stopColor="#000" stopOpacity="0" /><stop offset="1" stopColor="#000" stopOpacity=".75" /></radialGradient>
-    </defs>
+    <svg width="0" height="0" aria-hidden="true" style={{position: 'absolute'}}>
+      <defs>
+        <filter id="sa-b1" x="-20%" y="-20%" width="140%" height="140%"><feGaussianBlur stdDeviation="1.2" /></filter>
+        <filter id="sa-b3" x="-30%" y="-30%" width="160%" height="160%"><feGaussianBlur stdDeviation="3" /></filter>
+        <filter id="sa-glow" x="-50%" y="-50%" width="200%" height="200%"><feGaussianBlur stdDeviation="2.4" result="b" /><feMerge><feMergeNode in="b" /><feMergeNode in="SourceGraphic" /></feMerge></filter>
+        <radialGradient id="sa-vig" cx=".5" cy=".5" r=".75"><stop offset=".55" stopColor="#000" stopOpacity="0" /><stop offset="1" stopColor="#000" stopOpacity=".75" /></radialGradient>
+      </defs>
+    </svg>
   );
 }

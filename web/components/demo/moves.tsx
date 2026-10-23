@@ -98,7 +98,7 @@ export const moves: Record<string, Demo> = {
         <path className="sa-faint" d="M200 20 L200 120 L300 120 L300 20 Z M250 20 L250 120 M200 70 L300 70" />
         <Bust x={214} y={86} s={1.15} talk />
       </Mv>
-      <g filter={`url(#${u}-b1)`}><Mv v="0 0;-2 1;0 0" d={D}><BackHead x={76} y={128} s={1.9} /></Mv></g>
+      <g filter={`url(#sa-b1)`}><Mv v="0 0;-2 1;0 0" d={D}><BackHead x={76} y={128} s={1.9} /></Mv></g>
       <Inset>
         <Subj x={52} y={18} r={3} /><Subj x={30} y={38} r={3} />
         <g transform={camAt(24, 48, 30)}><CamTop fov={18} len={30} /></g>
@@ -151,7 +151,7 @@ export const moves: Record<string, Demo> = {
     </Loop>,
   },
   'dolly-zoom': {
-    note: '一边后退一边推焦距：人物大小一点没变，身后的走廊却被拉长、扑过来——看起来像空间在变形，这就是眩晕感。',
+    note: '一边后退一边推焦距：人物大小一点没变，身后的走廊却被压缩、朝人扑过来——看起来像空间在变形，这就是眩晕感。',
     art: () => <Loop>
       <Sc cx={160} cy={84} {...sc(1, 2.1)}>
         {[0, 1, 2, 3, 4].map((i) => {
@@ -174,7 +174,7 @@ export const moves: Record<string, Demo> = {
   'macro-push': {
     note: '贴着一滴露水往前推：越近，叶脉和水珠里的高光越清楚，背景只剩一圈圈虚化光斑——平时看不见的纹理被放大成主角。',
     art: (u) => <Loop>
-      <g filter={`url(#${u}-b3)`}><Sc cx={160} cy={90} {...sc(1, 1.3)}>
+      <g filter={`url(#sa-b3)`}><Sc cx={160} cy={90} {...sc(1, 1.3)}>
         {[[40, 40, 14], [90, 130, 10], [250, 36, 18], [290, 120, 12], [200, 150, 9]].map(([x, y, r], i) => <circle key={i} className="sa-bokeh" cx={x} cy={y} r={r} />)}
       </Sc></g>
       <Sc cx={176} cy={84} {...sc(1, 3)}>
@@ -355,5 +355,57 @@ export const moves: Record<string, Demo> = {
         <g><animateMotion dur="3.2s" repeatCount="indefinite" rotate="auto" path="M42 54 C30 44 52 36 42 26 C34 18 44 10 50 4" /><g transform="rotate(90)"><CamTop fov={20} len={10} /></g></g>
       </Inset>
     </g>,
+  },
+  tilt: {
+    note: '机位站着不动，镜头像人抬头一样从脚往上仰：先看到鞋，再看到脸，最后是身后的高楼——上下方向的「摇」。',
+    art: () => <Loop>
+      <Mv {...mv('0 -190', '0 0')}>
+        <rect className="sa-wall" x={-20} y={-20} width={360} height={400} />
+        <Skyline x={-30} w={380} base={352} seed={44} hMin={200} hMax={330} lit={0.3} />
+        <path className="sa-line" d="M-20 352 L340 352" /><Floor vy={352} y0={352} n={9} rows={2} />
+        <Person x={160} y={352} h={280} face />
+      </Mv>
+      <Inset label="机位 · 侧视">
+        <path className="sa-soft" d="M4 52 L80 52" />
+        <path className="sa-line" d="M60 52 L60 16 M56 52 L64 52" /><circle className="sa-line" cx={60} cy={13} r={3} />
+        <g transform="translate(22 34)"><g><T type="rotate" {...mv('30', '-30')} /><CamSide x={0} y={0} s={0.55} /></g></g>
+      </Inset>
+    </Loop>,
+  },
+  'crash-zoom': {
+    note: '镜头位置没动，焦距在半秒内猛地推上去：整个画面一起放大、没有前后错位（没有视差），像被一把拽到脸上。',
+    art: () => <Loop>
+      <Sc cx={160} cy={74} v="1;1;2.7;2.7;1;1" kt="0;.3;.38;.9;.95;1" ease=".7 0 .2 1">
+        <rect className="sa-wall" x={-20} y={-20} width={360} height={220} />
+        <Skyline x={-20} w={360} base={130} seed={8} hMin={20} hMax={70} />
+        <path className="sa-line" d="M-20 130 L340 130" />
+        <Bust x={160} y={90} s={0.75} />
+      </Sc>
+      <Op v="0;0;1;0;0" kt="0;.3;.34;.42;1">
+        {Array.from({length: 16}, (_, i) => { const a = (i / 16) * Math.PI * 2, c = +Math.cos(a).toFixed(3), sn = +Math.sin(a).toFixed(3); return <path key={i} className="sa-acc" opacity={0.55} d={`M${160 + c * 70} ${90 + sn * 50} L${160 + c * 190} ${90 + sn * 130}`} />; })}
+      </Op>
+      <Txt x={300} y={170} a="end" s={7}>变焦 · 无视差</Txt>
+    </Loop>,
+  },
+  'aerial-reveal': {
+    note: '无人机贴着山脊升起、向前飞：越过山脊的那一刻，下面的云海和远处雪山一下子全露出来——遮挡物让「揭示」有了冲击力。',
+    art: () => <Loop>
+      <rect className="sa-wall" x={0} y={0} width={W} height={180} />
+      <Mv {...mv('0 30', '0 0')}>
+        <path className="sa-hill2" d="M0 96 L50 70 L80 82 L130 40 L170 76 L210 58 L250 30 L290 66 L320 54 L320 120 L0 120 Z" />
+        <path className="sa-key" d="M130 40 L122 52 L134 48 L140 54 Z M250 30 L242 44 L254 40 L260 46 Z" opacity={0.7} />
+      </Mv>
+      <Mv {...mv('0 40', '0 0')}>
+        {[0, 1, 2].map((i) => <path key={i} className="sa-cloud" d={`M-20 ${110 + i * 12} q30 -10 60 0 t60 0 t60 0 t60 0 t60 0 t60 0 L340 200 L-20 200 Z`} opacity={0.5 - i * 0.12} />)}
+      </Mv>
+      <Mv {...mv('0 -40', '0 150')}><path className="sa-dark" d="M-20 120 L60 70 L120 92 L180 60 L260 96 L340 80 L340 260 L-20 260 Z" /><path className="sa-line" d="M-20 120 L60 70 L120 92 L180 60 L260 96 L340 80" /><Tree x={60} y={72} s={0.9} /><Tree x={190} y={62} s={0.7} /></Mv>
+      <Inset label="机位 · 侧视">
+        <path className="sa-body" d="M20 58 L44 30 L66 58 Z" />
+        <path className="sa-soft sa-dash" d="M10 50 C20 40 30 20 60 14" />
+        <g><animateMotion dur={`${D}s`} repeatCount="indefinite" keyPoints="0;0;1;1;0;0" keyTimes={K} calcMode="linear" path="M10 50 C20 40 30 20 60 14" />
+          <rect className="sa-cam" x={-4} y={-2} width={8} height={4} rx={1} /><path className="sa-acc" d="M-7 -3 L-2 -3 M2 -3 L7 -3" />
+        </g>
+      </Inset>
+    </Loop>,
   },
 };

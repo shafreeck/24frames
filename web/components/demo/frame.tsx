@@ -95,7 +95,7 @@ function Ladybug() {
 function Macro({u, drop = false}: {u: string; drop?: boolean}) {
   return <g>
     <defs><filter id={`${u}-mf`} x="-20%" y="-20%" width="140%" height="140%"><feGaussianBlur stdDeviation="3"><A a="stdDeviation" kt="0;.15;.45;.85;.95;1" v="4;4;0;0;4;4" /></feGaussianBlur></filter></defs>
-    <g filter={`url(#${u}-b3)`}>{[[40, 40, 16], [96, 30, 10], [250, 36, 20], [292, 82, 12], [30, 100, 12]].map(([x, y, r], i) => <circle key={i} className="sa-bokeh" cx={x} cy={y} r={r} />)}</g>
+    <g filter={`url(#sa-b3)`}>{[[40, 40, 16], [96, 30, 10], [250, 36, 20], [292, 82, 12], [30, 100, 12]].map(([x, y, r], i) => <circle key={i} className="sa-bokeh" cx={x} cy={y} r={r} />)}</g>
     <g filter={`url(#${u}-mf)`}>
       {drop ? <g>
         <path className="sa-body" d="M0 150 C80 100 200 80 330 92 L330 200 L0 200 Z" />
@@ -119,12 +119,12 @@ function LitFace({u, shadowX, shadowKt = K, blur = false, tri = false, rim = fal
       <clipPath id={`${u}-fc`}><path d={HEAD} /></clipPath>
       <g clipPath={`url(#${u}-fc)`}>
         {tint}
-        <g filter={blur ? `url(#${u}-b1)` : undefined}><g><T type="translate" kt={shadowKt} v={shadowX} />
+        <g filter={blur ? `url(#sa-b1)` : undefined}><g><T type="translate" kt={shadowKt} v={shadowX} />
           <path className="sa-shade" d="M1.5 -30 C4 -10 3 4 1.6 6 C3 9 4 14 3 30 L40 30 L40 -30 Z" />
         </g></g>
         {tri && <Op v="0;0;.9;.9;0;0" kt={K}><path className="sa-key" d="M3.4 2.2 L10.4 1.6 L5.2 9.6 Z" /></Op>}
       </g>
-      {rim && <path className="sa-rim" d={HEAD} filter={`url(#${u}-glow)`}><A a="opacity" kt={K} v={seq(0.15, 1)} /></path>}
+      {rim && <path className="sa-rim" d={HEAD} filter={`url(#sa-glow)`}><A a="opacity" kt={K} v={seq(0.15, 1)} /></path>}
     </g>
   </g>;
 }
@@ -137,7 +137,7 @@ function CastShadow({u, soft = false}: {u: string; soft?: boolean}) {
   return <g>
     <rect className="sa-wall" x={0} y={0} width={W} height={180} />
     <path className="sa-line" d="M0 150 L320 150" /><path className="sa-faint" d="M0 150 L-40 190 M320 150 L360 190" />
-    <g opacity={soft ? 0.5 : 0.85} filter={soft ? `url(#${u}-b3)` : undefined}>
+    <g opacity={soft ? 0.5 : 0.85} filter={soft ? `url(#sa-b3)` : undefined}>
       <g transform="translate(170 150)"><g><T type="skewX" v="38;-38;38" kt={kt} d={8} /><g className="sa-shadowgrp" transform="translate(-170 -150)"><Person x={170} y={150} h={104} /></g></g></g>
     </g>
     <Person x={160} y={158} h={100} face />
@@ -262,7 +262,7 @@ export const frame: Record<string, Demo> = {
       return <Loop>
         {city}
         <defs><linearGradient id={`${u}-tg`} x1="0" y1="0" x2="0" y2="1"><stop offset=".15" stopColor="#fff" /><stop offset=".42" stopColor="#000" /><stop offset=".6" stopColor="#000" /><stop offset=".88" stopColor="#fff" /></linearGradient><mask id={`${u}-tm`}><rect x={0} y={0} width={W} height={180} fill={`url(#${u}-tg)`} /></mask></defs>
-        <g mask={`url(#${u}-tm)`}><Op kt={K} v={seq(0, 1)}><g filter={`url(#${u}-b3)`}>{city}</g></Op></g>
+        <g mask={`url(#${u}-tm)`}><Op kt={K} v={seq(0, 1)}><g filter={`url(#sa-b3)`}>{city}</g></Op></g>
         <Label a="普通俯拍" b="移轴 · 只留中间一条清楚" />
       </Loop>;
     },
@@ -270,7 +270,7 @@ export const frame: Record<string, Demo> = {
 
   // 光线（视频）
   'light-rembrandt': {note: '灯从正前方移到侧上方 45 度：脸的另一半沉入阴影，只在暗侧颧骨上留下一个三角形亮斑——那个三角就是伦勃朗光。', art: (u) => <Loop><rect className="sa-wall" x={0} y={0} width={W} height={180} /><g><T type="translate" kt={K} v={seq('120 40', '30 0')} /><Bulb x={0} y={30} /></g><LitFace u={u} shadowX={seq('22 0', '0 0')} tri /></Loop>},
-  'light-rim': {note: '光源在人物身后：脸是暗的，但头发和肩膀边缘亮起一圈细光，人从黑背景里被「勾」了出来。', art: (u) => <Loop><rect className="sa-dark" x={0} y={0} width={W} height={180} /><Op kt={K} v={seq(0.2, 1)}><circle className="sa-glow" cx={186} cy={52} r={6} filter={`url(#${u}-glow)`} /></Op><LitFace u={u} shadowX={seq('-30 0', '-30 0')} rim /></Loop>},
+  'light-rim': {note: '光源在人物身后：脸是暗的，但头发和肩膀边缘亮起一圈细光，人从黑背景里被「勾」了出来。', art: (u) => <Loop><rect className="sa-dark" x={0} y={0} width={W} height={180} /><Op kt={K} v={seq(0.2, 1)}><circle className="sa-glow" cx={186} cy={52} r={6} filter={`url(#sa-glow)`} /></Op><LitFace u={u} shadowX={seq('-30 0', '-30 0')} rim /></Loop>},
   'light-hard': {note: '一盏小而硬的灯左右移动：墙上的影子边缘像刀切一样清楚，影子随灯反方向摆动。', art: (u) => <CastShadow u={u} />},
   'light-soft': {note: '换成一块大柔光箱：同样移动，影子却是一团边缘发虚的淡影——光源越大，阴影越软。', art: (u) => <CastShadow u={u} soft />},
   'light-golden': {
@@ -292,7 +292,7 @@ export const frame: Record<string, Demo> = {
     note: '店招霓虹一闪一闪，粉和青两种颜色直接打在脸上，一边一个色——光源本身就在画面里。',
     art: (u) => <g>
       <rect className="sa-dark" x={0} y={0} width={W} height={180} />
-      <g filter={`url(#${u}-glow)`}>
+      <g filter={`url(#sa-glow)`}>
         <path className="sa-neon1" d="M24 28 L64 28 L44 52 Z M44 52 L44 72 M32 72 L56 72 M50 22 L58 36"><A a="opacity" v="1;1;.2;1;.3;1;1" kt="0;.4;.42;.46;.5;.54;1" d={3} discrete /></path>
         <path className="sa-neon2" d="M236 26 C262 22 290 30 296 48 C290 66 262 72 236 68 C226 56 226 38 236 26 Z M250 40 L280 40"><A a="opacity" v="1;1;.3;1;1" kt="0;.7;.72;.76;1" d={4} discrete /></path>
       </g>
@@ -317,9 +317,9 @@ export const frame: Record<string, Demo> = {
     note: '太阳正好藏在人身后：头发和肩膀镶上一圈亮边，镜头里飘过几颗光斑——逆光让画面通透、有空气感。',
     art: (u) => <g>
       <rect className="sa-wall" x={0} y={0} width={W} height={180} />
-      <circle className="sa-sunf" cx={172} cy={58} r={22} filter={`url(#${u}-b3)`} opacity={0.75}><A a="r" v="20;26;20" d={4} /></circle>
+      <circle className="sa-sunf" cx={172} cy={58} r={22} filter={`url(#sa-b3)`} opacity={0.75}><A a="r" v="20;26;20" d={4} /></circle>
       <Ridge y={130} amp={12} seed={3} c="sa-hill" />
-      <path className="sa-rim" d="M144 180 C146 120 150 96 160 92 C150 84 150 60 168 54 C186 52 192 70 186 86 C198 92 204 120 206 180" filter={`url(#${u}-glow)`} />
+      <path className="sa-rim" d="M144 180 C146 120 150 96 160 92 C150 84 150 60 168 54 C186 52 192 70 186 86 C198 92 204 120 206 180" filter={`url(#sa-glow)`} />
       <Person x={174} y={190} h={140} back />
       {[[110, 110, 7], [80, 140, 10], [50, 168, 14]].map(([x, y, r], i) => <circle key={i} className="sa-bokeh" cx={x} cy={y} r={r}><T type="translate" v="0 0;-14 10;0 0" d={5} /></circle>)}
     </g>,
@@ -350,7 +350,7 @@ export const frame: Record<string, Demo> = {
     note: '一侧品红、一侧青蓝两盏灯同时打在脸上，在鼻梁处交汇——两种颜色的光把一张脸分成两个世界。',
     art: (u) => <Loop>
       <rect className="sa-dark" x={0} y={0} width={W} height={180} />
-      <g filter={`url(#${u}-glow)`}><path className="sa-neon1" d="M30 20 L30 160" /><path className="sa-neon2" d="M290 20 L290 160" /></g>
+      <g filter={`url(#sa-glow)`}><path className="sa-neon1" d="M30 20 L30 160" /><path className="sa-neon2" d="M290 20 L290 160" /></g>
       <LitFace u={u} shadowX="-60 0;-60 0" shadowKt="0;1" tint={<Op kt={K} v={seq(0.15, 1)}><rect className="sa-tint1" x={-20} y={-30} width={19} height={60} /><rect className="sa-tint2" x={1} y={-30} width={19} height={60} /></Op>} />
     </Loop>,
   },
@@ -418,7 +418,86 @@ export const frame: Record<string, Demo> = {
       <g><T type="translate" kt={K} v={seq('0 0', '96 -54')} /><Person x={110} y={124} h={40} /></g>
     </Loop>,
   },
+  'shot-mcu': shot([167, 119.3, 18], 'MCU 近景 · 胸口以上', '取景框收到胸口以上：表情看得清，又留了一点肩膀和环境——对话里单人镜头最常用的距离。'),
+  'rack-focus': {
+    note: '机位一动不动，只是焦点从前景的戒指慢慢移到门口的人身上：清楚和模糊对调，观众的视线也被带了过去。',
+    art: (u) => <Loop>
+      <defs>
+        <filter id={`${u}-rn`} x="-20%" y="-20%" width="140%" height="140%"><feGaussianBlur stdDeviation="0"><A a="stdDeviation" kt={K} v={seq(0, 3.4)} /></feGaussianBlur></filter>
+        <filter id={`${u}-rf`} x="-20%" y="-20%" width="140%" height="140%"><feGaussianBlur stdDeviation="3"><A a="stdDeviation" kt={K} v={seq(3, 0)} /></feGaussianBlur></filter>
+      </defs>
+      <rect className="sa-wall" x={0} y={0} width={W} height={180} />
+      <g filter={`url(#${u}-rf)`}>
+        <path className="sa-line" d="M0 132 L320 132" />
+        <rect className="sa-bld" x={176} y={30} width={74} height={102} /><rect className="sa-hill2" x={182} y={36} width={62} height={96} />
+        <Person x={213} y={132} h={88} face />
+        <Lamp x={100} y={132} s={0.9} />
+      </g>
+      <g filter={`url(#${u}-rn)`}>
+        <path className="sa-body" d="M-10 150 L150 136 L150 190 L-10 190 Z" />
+        <rect className="sa-body" x={44} y={112} width={46} height={30} rx={3} /><path className="sa-line" d="M44 120 L90 120" />
+        <circle className="sa-acc" cx={67} cy={106} r={9} /><path className="sa-accf" d="M62 97 L67 90 L72 97 Z" />
+      </g>
+      <Label a="焦点：前景的戒指" b="焦点：门口的人" />
+    </Loop>,
+  },
+  'shallow-dof': {
+    note: '光圈一点点开大：人物始终清楚，身后的街景却越来越虚，路灯化成一颗颗圆光斑——观众的眼睛只剩一个去处。',
+    art: (u) => <DofDemo u={u} />,
+  },
+  'img-lens-shallow-dof': {
+    note: '光圈开到最大：只有眼睛是清楚的，树叶和灯光化成奶油一样的圆形光斑，主体一下子从背景里跳出来。',
+    art: (u) => <DofDemo u={u} trees />,
+  },
+  'img-light-high-key': {
+    note: '整张画面被提亮到以白色为主、阴影几乎消失；右下角的亮度分布（直方图）整体挤到了右边——这就是「高调」。',
+    art: () => <KeyDemo high />,
+  },
+  'img-light-low-key': {
+    note: '大部分画面沉进暗里，只留一束光照亮半张脸；右下角的直方图整体挤到左边——暗，但暗部还有层次。',
+    art: (u) => <KeyDemo u={u} />,
+  },
+  'img-light-silhouette': {
+    note: '天越来越亮，人却完全变黑，只剩一圈轮廓：没有五官也认得出是谁、在做什么，因为姿态和外形够清楚。',
+    art: () => <Loop>
+      <rect x={0} y={0} width={W} height={180} fill="#2a3036"><A a="fill" kt={K} v={seq('#2a3036', '#f0a050')} ease={false} /></rect>
+      <rect x={0} y={90} width={W} height={60} fill="#3a3036" opacity={0.6}><A a="fill" kt={K} v={seq('#3a3036', '#ffd28a')} ease={false} /></rect>
+      <circle className="sa-sunf" cx={196} cy={112} r={20} />
+      <path d="M0 150 L80 128 L160 118 L240 126 L320 146 L320 180 L0 180 Z" fill="#0b0c0e" />
+      <Op kt={K} v={seq(1, 0)}><Person x={160} y={122} h={90} face /></Op>
+      <Op kt={K} v={seq(0, 1)}><g className="sa-shadowgrp"><Person x={160} y={122} h={90} /><path d="M146 37 L176 37 L171 29 L151 29 Z M171 56 L198 38 L201 41 L174 60 Z" /></g></Op>
+    </Loop>,
+  },
 };
+
+function DofDemo({u, trees = false}: {u: string; trees?: boolean}) {
+  return <Loop>
+    <defs><filter id={`${u}-dof`} x="-10%" y="-10%" width="120%" height="120%"><feGaussianBlur stdDeviation="0"><A a="stdDeviation" kt={K} v={seq(0, 4.5)} /></feGaussianBlur></filter></defs>
+    <rect className="sa-wall" x={0} y={0} width={W} height={180} />
+    <g filter={`url(#${u}-dof)`}>
+      {trees ? <><Tree x={40} y={140} s={2} /><Tree x={270} y={150} s={2.4} /><Ridge y={120} amp={20} seed={9} c="sa-hill2" /></> : <><Skyline x={-20} w={360} base={140} seed={15} hMin={30} hMax={100} lit={0.4} /><path className="sa-line" d="M0 140 L320 140" /></>}
+      {[[40, 50], [90, 30], [250, 40], [290, 90], [230, 110], [60, 110]].map(([x, y], i) => <circle key={i} className="sa-bokeh" cx={x} cy={y} r={3}><A a="r" kt={K} v={seq(3, 13)} /></circle>)}
+    </g>
+    <Bust x={160} y={100} s={1.6} />
+    <Label a="f/8 · 前后都清楚" b="f/1.4 · 只有人清楚" />
+  </Loop>;
+}
+
+function KeyDemo({high = false, u}: {high?: boolean; u?: string}) {
+  const lo = [2, 4, 7, 10, 12, 12, 10, 8, 6, 4, 3, 2], hiD = [0.5, 0.5, 1, 1, 2, 3, 4, 6, 9, 12, 14, 16], loD = [16, 14, 11, 8, 5, 3, 2, 2, 1.5, 1, 1, 2];
+  const to = high ? hiD : loD;
+  return <Loop>
+    <rect x={0} y={0} width={W} height={180} fill="#3a3c40"><A a="fill" kt={K} v={seq('#3a3c40', high ? '#efede8' : '#08090b')} ease={false} /></rect>
+    {!high && u && <><defs><radialGradient id={`${u}-spot`} cx=".42" cy=".42" r=".5"><stop offset="0" stopColor="#ffe6b8" stopOpacity=".35" /><stop offset="1" stopColor="#ffe6b8" stopOpacity="0" /></radialGradient></defs><Op kt={K} v={seq(0, 1)}><ellipse cx={150} cy={80} rx={90} ry={80} fill={`url(#${u}-spot)`} /></Op></>}
+    <g className={high ? 'sa-flash' : undefined}><Bust x={150} y={88} s={1.65} blink={false} /></g>
+    {!high && <Op kt={K} v={seq(0, 0.85)}><path className="sa-shade" d="M150 40 C160 70 160 100 152 120 L150 200 L330 200 L330 0 L150 0 Z" /></Op>}
+    <g transform="translate(234 128)">
+      <rect className="sa-panel" x={-6} y={-6} width={78} height={44} rx={3} />
+      {lo.map((h, i) => <rect key={i} className="sa-clip" x={i * 5.6} width={4} y={30 - h * 1.6} height={h * 1.6}><A a="height" kt={K} v={seq(h * 1.6, to[i] * 1.6)} /><A a="y" kt={K} v={seq(30 - h * 1.6, 30 - to[i] * 1.6)} /></rect>)}
+      <Txt x={0} y={-9} s={6}>亮度分布</Txt>
+    </g>
+  </Loop>;
+}
 frame['img-light-golden'] = {...frame['light-golden'], note: frame['img-light-golden'].note};
 
 function Thirds() {

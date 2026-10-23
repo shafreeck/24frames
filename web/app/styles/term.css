@@ -157,6 +157,8 @@
 }
 
 .td-meta { padding-top: 2px; min-width: 0; }
+.td-fine.td-howto { color: var(--ink-3); margin-bottom: 4px; }
+.td-howto a { color: var(--gold-2); border-bottom: 1px solid rgba(200, 168, 106, 0.4); }
 .td-eyebrow {
   margin: 0 0 14px;
   font-size: 10.5px;

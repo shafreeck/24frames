@@ -41,7 +41,7 @@ window.MZ_DATA_EXTRA = (window.MZ_DATA_EXTRA || []).concat([
    promptZh:"正上方垂直俯拍，物件在同一平面平铺排列，间距均匀，边缘留白一致，无透视畸变。",
    promptEn:"straight overhead flat lay, objects arranged on one plane with even spacing and consistent margins, no perspective distortion.",
    fail:["手机拿歪，物件出现梯形透视。","摆得太满，没有呼吸空间。"],
-   params:"手机平行桌面；光源偏一侧制造柔和投影。"},
+   params:"写明 top-down / 90 度正俯拍，否则模型常给 45 度斜俯；光源偏一侧，投影朝同一方向。"},
 
   {id:"img-comp-diagonal", media:"image", dim:"comp", group:"进阶", zh:"对角线构图", en:"Diagonal Composition",
    one:"主体或主要线条沿对角走，画面立刻有动势。",
@@ -58,7 +58,7 @@ window.MZ_DATA_EXTRA = (window.MZ_DATA_EXTRA || []).concat([
    promptZh:"单侧窗光，人物或物件一侧受光，另一侧柔和过渡，窗框投下清晰光斑，背景略暗。",
    promptEn:"single window light from one side, softly falling off into shadow, crisp light patch from the frame, background slightly darker.",
    fail:["两侧都亮，失去方向感。","窗光太硬，脸上出现难看阴影。"],
-   params:"远离窗户一侧补一块白纸或反光板即可。"},
+   params:"写清窗在哪一侧；暗侧写「柔和过渡、保留细节」，否则会死黑。"},
 
   {id:"img-light-side", media:"image", dim:"light", group:"基础", zh:"侧光", en:"Side Light",
    one:"光从 90 度侧打来，表面纹理被完全显形。",
@@ -66,7 +66,7 @@ window.MZ_DATA_EXTRA = (window.MZ_DATA_EXTRA || []).concat([
    promptZh:"90 度侧光，光源与主体同高，一半受光一半入影，表面纹理与凹凸被强烈强调。",
    promptEn:"90-degree side light at subject height, one half lit and one half in shadow, surface texture and relief strongly emphasized.",
    fail:["暗侧全黑，信息丢掉。","侧光太低，出现诡异底光。"],
-   params:"暗侧用反光补一点；纹理类题材最吃这一口。"},
+   params:"写明光源与主体同高的 90 度侧光；纹理类题材（皱纹、面包、布料）最吃这一口。"},
 
   {id:"img-light-backlit", media:"image", dim:"light", group:"基础", zh:"逆光", en:"Backlight",
    one:"光源在主体背后，边缘发光，主体接近剪影。",
@@ -74,7 +74,7 @@ window.MZ_DATA_EXTRA = (window.MZ_DATA_EXTRA || []).concat([
    promptZh:"逆光拍摄，光源位于主体正后方，边缘头发或绒毛被透光照亮出现光晕，主体正面接近剪影但保留细节。",
    promptEn:"backlit, light source directly behind the subject, hair or fuzz glowing at the edges, subject nearly silhouetted while retaining detail.",
    fail:["正面全黑，脸认不出。","没有遮挡直接入镜，出现大片眩光糊掉画面。"],
-   params:"镜头加遮光罩；主体前侧补一点反光保住细节。"},
+   params:"写「主体正面保留细节」防止死黑；想要光斑就写 lens flare，不想要就写 no flare。"},
 
   {id:"img-light-softbox", media:"image", dim:"light", group:"基础", zh:"柔光棚拍", en:"Softbox Studio",
    one:"大光源近距离散射，阴影几乎消失，干净利落。",
@@ -82,7 +82,7 @@ window.MZ_DATA_EXTRA = (window.MZ_DATA_EXTRA || []).concat([
    promptZh:"柔光箱棚拍，大面积柔光包裹主体，阴影极浅且边缘柔和，背景纯净，无杂乱反光。",
    promptEn:"softbox studio lighting, large diffused source wrapping the subject, very shallow soft shadows, clean background, no stray reflections.",
    fail:["平到没有体积，产品像贴图。","背景纸反光，出现色偏。"],
-   params:"一盏主灯加一块白卡即可；背景离主体 1 米以上。"},
+   params:"写清背景颜色与材质（纯白、浅灰亚克力）；要立体感就补一句「一侧略暗」。"},
 
   {id:"img-light-hard-shadow", media:"image", dim:"light", group:"进阶", zh:"硬光投影", en:"Hard Light Shadow",
    one:"小光源打出边缘锐利的大投影，影子本身是构图。",
@@ -98,7 +98,7 @@ window.MZ_DATA_EXTRA = (window.MZ_DATA_EXTRA || []).concat([
    promptZh:"黄金时刻自然光，太阳高度很低，暖色斜射，长而柔的阴影，空气中有轻微金色雾感。",
    promptEn:"golden hour natural light, very low sun, warm raking light, long soft shadows, faint golden haze in the air.",
    fail:["过饱和成橙红，像加了劣质滤镜。","太阳已落，光变蓝灰却仍写黄金时刻。"],
-   params:"日出后与日落前各约 20 至 30 分钟。"},
+   params:"日出后与日落前约一小时；写「低角度、长影子」比只写 golden hour 更稳。"},
 
   {id:"img-light-neon-mix", media:"image", dim:"light", group:"进阶", zh:"霓虹混光", en:"Neon Mixed Light",
    one:"两种以上彩色实景光同时打在主体上，肤色被环境改写。",
@@ -139,7 +139,7 @@ window.MZ_DATA_EXTRA = (window.MZ_DATA_EXTRA || []).concat([
    promptZh:"蓝调时刻，天空呈均匀深蓝，地面灯光已亮，建筑窗与路灯为暖黄，冷暖对比明确。",
    promptEn:"blue hour, uniform deep blue sky, ground lights already on, windows and street lamps warm yellow, clear warm-cool contrast.",
    fail:["天空全黑，其实已过蓝调。","长曝光把灯拖成一片白。"],
-   params:"日落后的 20 至 40 分钟；用三脚架压 ISO。"},
+   params:"日落后约 20 至 40 分钟；写明「天空还有深蓝、灯已亮」，否则模型会给全黑夜景。"},
 
   {id:"img-color-earthy", media:"image", dim:"color", group:"基础", zh:"大地色", en:"Earthy Palette",
    one:"棕、赭、米、橄榄，像从土里长出来的颜色。",
@@ -164,7 +164,7 @@ window.MZ_DATA_EXTRA = (window.MZ_DATA_EXTRA || []).concat([
    promptZh:"长焦人像，焦距约 85mm 至 135mm，面部比例自然，背景被压缩并柔和虚化，主体与背景明显分层。",
    promptEn:"telephoto portrait around 85 to 135mm, natural facial proportions, background compressed and softly defocused, clear separation.",
    fail:["用广角拍脸，鼻子被放大。","虚化过度，背景全无信息。"],
-   params:"人像首选 85mm；离主体 2 至 4 米最自然。"},
+   params:"人像首选写 85mm；想要更干净的背景写 135mm 与 f/2。"},
 
   {id:"img-lens-macro", media:"image", dim:"lens", group:"进阶", zh:"微距细节", en:"Macro Detail",
    one:"贴到最近对焦距离，把纹理放大成主画面。",
@@ -172,7 +172,7 @@ window.MZ_DATA_EXTRA = (window.MZ_DATA_EXTRA || []).concat([
    promptZh:"微距拍摄，最近对焦距离贴紧被摄物，极浅景深，只有一条纹理清晰，高光与反光细节可辨。",
    promptEn:"macro shot at minimum focus distance, extremely shallow depth of field, only one band of texture sharp, highlights and reflections legible.",
    fail:["景深太浅，主体全糊。","反光过曝，细节变成白块。"],
-   params:"景深浅就多拍几张不同焦点，后期可叠加。"},
+   params:"必须写清焦点落在哪个细节上（露珠、表盘刻度、一根睫毛）。"},
 
   {id:"img-lens-tilt-shift", media:"image", dim:"lens", group:"风格化", zh:"移轴微缩", en:"Tilt-Shift Miniature",
    one:"只保留一条横带清晰，把真实场景拍成模型。",
@@ -189,7 +189,7 @@ window.MZ_DATA_EXTRA = (window.MZ_DATA_EXTRA || []).concat([
    promptZh:"全身景别，人物头顶到脚底完整入画，上下各留少量边距，姿势清晰，背景不抢主体。",
    promptEn:"full body framing, head to feet complete with small margins, pose clearly readable, background not competing.",
    fail:["脚被裁掉，像失手。","留白太多，主体变小。"],
-   params:"手机竖拍全身，人站离 3 米以上不畸变。"},
+   params:"用 2:3 或 9:16 竖幅；写 full body、feet visible，模型才不裁脚。"},
 
   {id:"img-shot-half-body", media:"image", dim:"shot", group:"基础", zh:"半身", en:"Half Body",
    one:"腰部以上，表情与手部动作兼顾。",
@@ -197,7 +197,7 @@ window.MZ_DATA_EXTRA = (window.MZ_DATA_EXTRA || []).concat([
    promptZh:"半身景别，取景从腰部以上到头顶，面部与双手均完整清晰，背景适度虚化。",
    promptEn:"half body framing from waist up, face and both hands fully visible, background moderately defocused.",
    fail:["切在手腕或脖子，显得随意。","手被裁一半，动作看不懂。"],
-   params:"切点放腰部或大腿中段，别切关节。"},
+   params:"写 waist-up；切点放腰部或大腿中段，别切关节；手部要写「双手完整」。"},
 
   {id:"img-shot-eye-closeup", media:"image", dim:"shot", group:"进阶", zh:"眼部特写", en:"Eye Close-Up",
    one:"只拍眼睛，虹膜纹理与眼神里的一切。",
@@ -218,7 +218,7 @@ window.MZ_DATA_EXTRA = (window.MZ_DATA_EXTRA || []).concat([
   /* ---------------- 质感 ---------------- */
   {id:"img-tex-film-grain", media:"image", dim:"texture", group:"基础", zh:"胶片颗粒", en:"Film Grain",
    one:"细密颗粒铺满画面，高光柔和，边缘不锐。",
-   when:"复古与纪感人像、需要温度的照片。",
+   when:"复古与纪实感人像、需要温度的照片。",
    promptZh:"胶片质感，均匀细密颗粒覆盖全图，高光柔和溢出，暗部略带噪点，边缘轻微失焦，色彩略有偏移。",
    promptEn:"film texture, fine even grain across the frame, soft highlight halation, slight noise in shadows, gentle edge softness, slightly shifted color.",
    fail:["颗粒粗成噪点，像低画质。","只加颗粒不改高光，还是数码味。"],
@@ -292,7 +292,7 @@ window.MZ_DATA_EXTRA = (window.MZ_DATA_EXTRA || []).concat([
   {id:"img-genre-editorial", media:"image", dim:"genre", group:"写实", zh:"时尚编辑大片", en:"Editorial Fashion",
    one:"强造型、硬光或极简背景，姿态优先于美。",
    when:"服饰、品牌故事、杂志感画面。",
-   promptZh:"时尚编辑风格，造型与姿态有强烈态度，硬光或极简背景，色彩克制，人物视线不讨好在镜头。",
+   promptZh:"时尚编辑风格，造型与姿态有强烈态度，硬光或极简背景，色彩克制，人物视线不讨好镜头。",
    promptEn:"editorial fashion look, strong styling and attitude in the pose, hard light or minimal backdrop, restrained palette, gaze not pleasing the camera.",
    fail:["写成甜美微笑，编辑感全无。","服装细节被姿态吃掉。"],
    params:"态度靠姿态与光，不靠滤镜。"},

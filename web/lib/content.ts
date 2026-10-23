@@ -7,15 +7,22 @@ export const SITE_DESC = 'AI 影像术语库：视频与图片两侧，按运镜
 export const DIM: Record<string, {label: string}> = {
   move: {label:'运镜'}, shot:{label:'景别'}, lens:{label:'镜头'}, light:{label:'光线'},
   color:{label:'色彩'}, comp:{label:'构图'}, texture:{label:'质感'}, tempo:{label:'节奏'},
-  cut:{label:'转场'}, sound:{label:'声音'}, genre:{label:'流派'}, style:{label:'风格'},
+  cut:{label:'转场'}, sound:{label:'声音'}, genre:{label:'流派'}, style:{label:'风格'}, ai:{label:'AI 制作'},
+  story:{label:'编剧'}, direct:{label:'导演'},
 };
-export const MEDIA: Record<string,string> = {video:'视频', image:'图片'};
+export const MEDIA: Record<string,string> = {video:'视频', image:'图片', plan:'编导'};
 export const DIM_ORDER: Record<string,string[]> = {
-  video:['move','shot','lens','light','color','comp','texture','tempo','cut','sound','genre','style'],
-  image:['comp','light','color','lens','shot','texture','genre','style'],
+  video:['move','shot','lens','light','color','comp','texture','tempo','cut','sound','genre','style','ai'],
+  image:['comp','light','color','lens','shot','texture','genre','style','ai'],
+  plan:['story','direct'],
 };
 const GROUP_ORDER = ['基础','进阶','视角','风格化','写实','动画','类型','东方','人像','静物','建筑','食物','风景','通用'];
 const ALIAS: Record<string,string[]> = {
+  'story-logline':['故事梗概','一句话故事','故事核'], 'story-hook':['开头','黄金三秒','前三秒','抓人'],
+  'story-cliffhanger':['下集预告','留悬念','断章'], 'dir-shot-list':['分镜','分镜头脚本','拍摄清单','分镜脚本'],
+  'dir-180-rule':['越轴','对话机位','左右反了'], 'dir-shot-reverse':['对话镜头','两人对话','来回切'],
+  'ai-consistency':['人物一致','同一个人','脸不一样','换脸','角色统一'], 'ai-i2v':['图片变视频','让图片动起来','首帧'],
+  'ai-lipsync':['口型','说话','配音对嘴'], 'img-ai-char-sheet':['三视图','人设图','角色三视图'], 'img-ai-inpaint':['局部修改','修手','改一部分'],
   orbit:['绕着人转','绕一圈','转一圈','转圈','绕人一圈','环绕镜头'],
   'rise-orbit':['边升边转','升起来转一圈','往上绕'],
   'dolly-in':['推近','推进','往前推','推镜头','靠近'],
@@ -39,7 +46,7 @@ const ALIAS: Record<string,string[]> = {
 export interface Item {
   id:string; kind:string; dim:string; media:string; dimLabel:string; mediaLabel:string; kindLabel:string;
   zh:string; en:string; group:string; one:string; when:string; keywords:string[];
-  promptZh:string; promptEn:string; demoPrompt:string; fail:string[]; params:string; order:number; url:string; hay:string;
+  promptZh:string; promptEn:string; demoPrompt:string; say:string; fail:string[]; params:string; order:number; url:string; hay:string;
   nameCount:number; nameDup:boolean; dupTag:string;
 }
 type Raw = Record<string,unknown>;
@@ -53,16 +60,20 @@ export function loadContent() {
   const src = path.resolve(process.cwd(), '../src');
   const files = fs.readdirSync(src).filter(f=>f==='data.js'||(f.startsWith('data-')&&f.endsWith('.js')))
     .sort((a,b)=>a==='data.js'?-1:b==='data.js'?1:a.localeCompare(b));
-  const sandbox: {window:{MZ_DATA?:{moves:Raw[];styles:Raw[]}; MZ_DATA_EXTRA?:Raw[]; MZ_DEMO?:Record<string,string>}} = {window:{}};
+  const sandbox: {window:{MZ_DATA?:{moves:Raw[];styles:Raw[]}; MZ_DATA_EXTRA?:Raw[]; MZ_DEMO?:Record<string,string>; MZ_SAY?:Record<string,string>}} = {window:{}};
   vm.createContext(sandbox);
   for (const file of files) vm.runInContext(fs.readFileSync(path.join(src,file),'utf8'),sandbox,{filename:`src/${file}`});
   // demo-prompts.js 不算内容源：它只提供样例提示词，单独执行，不进 files 清单。
   const demoFile = path.join(src, 'demo-prompts.js');
   if (fs.existsSync(demoFile)) vm.runInContext(fs.readFileSync(demoFile, 'utf8'), sandbox, {filename: 'src/demo-prompts.js'});
+  // search-say.js 同理：白话说法只进搜索，不是内容源。
+  const sayFile = path.join(src, 'search-say.js');
+  if (fs.existsSync(sayFile)) vm.runInContext(fs.readFileSync(sayFile, 'utf8'), sandbox, {filename: 'src/search-say.js'});
   const base=sandbox.window.MZ_DATA;
   if (!base || !Array.isArray(base.moves) || !Array.isArray(base.styles)) throw new Error('src/data.js 未提供 window.MZ_DATA.moves / .styles');
   const demo=sandbox.window.MZ_DEMO;
-  return {...base, extra:Array.isArray(sandbox.window.MZ_DATA_EXTRA)?sandbox.window.MZ_DATA_EXTRA:[], demo:(demo&&typeof demo==='object')?demo:({} as Record<string,string>), files};
+  const say=sandbox.window.MZ_SAY;
+  return {...base, extra:Array.isArray(sandbox.window.MZ_DATA_EXTRA)?sandbox.window.MZ_DATA_EXTRA:[], demo:(demo&&typeof demo==='object')?demo:({} as Record<string,string>), say:(say&&typeof say==='object')?say:({} as Record<string,string>), files};
 }
 
 export function buildItems(data: ReturnType<typeof loadContent>): Item[] {
@@ -83,11 +94,12 @@ export function buildItems(data: ReturnType<typeof loadContent>): Item[] {
     const it:Item={id,kind,dim,media,dimLabel,mediaLabel:MEDIA[media]||media,kindLabel:dimLabel,
       zh:s(r.zh),en:s(r.en),group:s(r.group)||'未分组',one:s(r.one),when:s(r.when),
       keywords:Array.isArray(r.keywords)?r.keywords.map(s):[], promptZh:s(r.promptZh),promptEn:s(r.promptEn),
-      demoPrompt:s(data.demo?.[id]), fail:Array.isArray(r.fail)?r.fail.map(s):[],params:s(r.params),order:i,url:`/term/${id}`,hay:'',nameCount:0,nameDup:false,dupTag:''};
+      demoPrompt:s(data.demo?.[id]), say:[...(ALIAS[id]||[]), ...s(data.say?.[id]).split('|')].map(v=>v.trim()).filter(Boolean).join(' | '), fail:Array.isArray(r.fail)?r.fail.map(s):[],params:s(r.params),order:i,url:`/term/${id}`,hay:'',nameCount:0,nameDup:false,dupTag:''};
     it.hay=[it.zh,it.en,it.one,it.when,it.keywords.join(' '),it.promptZh,it.promptEn,it.fail.join(' '),it.params,it.group,it.dimLabel,it.mediaLabel,...(ALIAS[id]||[])].join(' ').toLowerCase();
     return it;
   });
-  items.sort((a,b)=>(a.media==='video'?0:1)-(b.media==='video'?0:1)||rank(dimsOf(a.media),a.dim)-rank(dimsOf(b.media),b.dim)||rank(GROUP_ORDER,a.group)-rank(GROUP_ORDER,b.group)||a.order-b.order);
+  const mediaRank=(m:string)=>rank(Object.keys(MEDIA),m);
+  items.sort((a,b)=>mediaRank(a.media)-mediaRank(b.media)||rank(dimsOf(a.media),a.dim)-rank(dimsOf(b.media),b.dim)||rank(GROUP_ORDER,a.group)-rank(GROUP_ORDER,b.group)||a.order-b.order);
   const ids=new Set<string>(), triples=new Set<string>();
   for(const it of items){
     const triple=`${it.media}|${it.dim}|${it.zh}`;

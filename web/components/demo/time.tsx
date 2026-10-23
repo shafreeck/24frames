@@ -51,7 +51,8 @@ function Wave({amp, x0 = 24, x1 = 296, y = 158, h = 12, step = 2.4, d = D, label
   const bars: ReactNode[] = [];
   for (let x = x0, i = 0; x <= x1; x += step, i++) {
     const a = Math.max(0.04, Math.min(1, amp((x - x0) / (x1 - x0))));
-    bars.push(<path key={i} className="sa-wave" d={`M${x} ${y - a * h} L${x} ${y + a * h}`} />);
+    const xx = +x.toFixed(1), hh = +(a * h).toFixed(2); // 三角函数在 Node 与浏览器里末位可能不同，取整避免水合不一致
+    bars.push(<path key={i} className="sa-wave" d={`M${xx} ${y - hh} L${xx} ${y + hh}`} />);
   }
   return <g>
     <rect className="sa-panel" x={x0 - 8} y={y - h - 8} width={x1 - x0 + 16} height={h * 2 + 16} rx={3} />
@@ -60,12 +61,13 @@ function Wave({amp, x0 = 24, x1 = 296, y = 158, h = 12, step = 2.4, d = D, label
     {label && <Txt x={x0} y={y - h - 11} s={6.5}>{label}</Txt>}
   </g>;
 }
-const noise = (seed: number) => (t: number) => { const v = Math.sin(t * 913.7 + seed) * 43758.5453; return v - Math.floor(v); };
+// 整数哈希做伪随机：不用 Math.sin，保证服务端与浏览器算出同一个数
+const noise = (seed: number) => (t: number) => { let h = (Math.round(t * 10000) * 374761393 + seed * 668265263) | 0; h = Math.imul(h ^ (h >>> 13), 1274126177); return ((h ^ (h >>> 16)) >>> 0) / 4294967296; };
 
 export const time: Record<string, Demo> = {
   // 质感
-  'tex-film-grain': {note: '分界线扫过后，画面多了一层会跳动的细颗粒，暗部偏暖、边角压暗——像真的从胶片上扫出来的。', art: (u) => <Wipe u={u} before={<Street />} after={<g><Street /><rect x={0} y={0} width={W} height={180} fill="rgba(200,140,60,.08)" /><Grain u={u} /><rect x={0} y={0} width={W} height={180} fill={`url(#${u}-vig)`} /></g>} a="数码原片" b="胶片颗粒" />},
-  'img-tex-film-grain': {note: '分界线扫过后，整张图覆上一层细碎跳动的颗粒，边角微暗——数码的「塑料感」一下子没了。', art: (u) => <Wipe u={u} before={<Face />} after={<g><Face /><rect x={0} y={0} width={W} height={180} fill="rgba(200,140,60,.08)" /><Grain u={u} /><rect x={0} y={0} width={W} height={180} fill={`url(#${u}-vig)`} /></g>} a="数码原片" b="胶片颗粒" />},
+  'tex-film-grain': {note: '分界线扫过后，画面多了一层会跳动的细颗粒，暗部偏暖、边角压暗——像真的从胶片上扫出来的。', art: (u) => <Wipe u={u} before={<Street />} after={<g><Street /><rect x={0} y={0} width={W} height={180} fill="rgba(200,140,60,.08)" /><Grain u={u} /><rect x={0} y={0} width={W} height={180} fill={`url(#sa-vig)`} /></g>} a="数码原片" b="胶片颗粒" />},
+  'img-tex-film-grain': {note: '分界线扫过后，整张图覆上一层细碎跳动的颗粒，边角微暗——数码的「塑料感」一下子没了。', art: (u) => <Wipe u={u} before={<Face />} after={<g><Face /><rect x={0} y={0} width={W} height={180} fill="rgba(200,140,60,.08)" /><Grain u={u} /><rect x={0} y={0} width={W} height={180} fill={`url(#sa-vig)`} /></g>} a="数码原片" b="胶片颗粒" />},
   'tex-clean': {note: '分界线扫过后，噪点和脏东西全部消失，线条锐利、暗部干净——像新机器直出的高清数码画面。', art: (u) => <Wipe u={u} before={<g><Street /><Grain u={u} op={0.7} /></g>} after={<Street />} a="噪点 / 脏" b="干净数码" />},
   'tex-matte': {note: '分界线扫过后，脸上和衣服上刺眼的反光点没了，黑色被轻轻抬亮成深灰——画面变得柔、不反光。', art: (u) => <Wipe u={u} before={<Gloss />} after={<Gloss matte />} a="亮面 · 有反光" b="哑光 · 高光收住" />},
   'tex-wet': {
@@ -237,7 +239,7 @@ export const time: Record<string, Demo> = {
   'cut-jump': {
     note: '机位和景别都不变，人却突然跳到房间别处、墙上的钟也跳了——同一画面里时间被直接剪掉，有焦躁、断裂感。',
     art: () => <g>
-      {[1, 2, 3, 4].map((w, i) => <Show key={w} t0={i / 4} t1={(i + 1) / 4}><Room who={w} /><g transform="translate(232 44)"><path className="sa-acc" d={`M0 0 L${Math.cos(i * 1.4) * 8} ${Math.sin(i * 1.4) * 8}`} /></g></Show>)}
+      {[1, 2, 3, 4].map((w, i) => <Show key={w} t0={i / 4} t1={(i + 1) / 4}><Room who={w} /><g transform="translate(232 44)"><path className="sa-acc" d={`M0 0 L${(Math.cos(i * 1.4) * 8).toFixed(2)} ${(Math.sin(i * 1.4) * 8).toFixed(2)}`} /></g></Show>)}
       <Timeline cuts={[0.25, 0.5, 0.75]} label="同一机位 · 时间被剪掉" />
     </g>,
   },
@@ -281,6 +283,103 @@ export const time: Record<string, Demo> = {
       <Show t0={0} t1={0.5}><Street />{Array.from({length: 10}, (_, i) => <path key={i} className="sa-faint" d={`M${(i * 37) % 320} 0 l-5 18`}><T type="translate" v="0 -20;0 190" d={0.7} ease={false} begin={`${-i * 0.07}s`} /></path>)}</Show>
       <Show t0={0.5} t1={1}><Street /><rect x={0} y={0} width={W} height={180} fill="rgba(0,0,0,.35)" /><Txt x={160} y={40} a="middle" s={9} c="sa-txt sa-txt-acc">—— 静 ——</Txt></Show>
       <Wave label="声音突然抽空" amp={(t) => (t < 0.5 ? 0.45 + noise(7)(t) * 0.55 : 0)} />
+    </g>,
+  },
+  'cut-dissolve': {
+    note: '窗边的年轻女孩慢慢变透明，同一扇窗边的老人同时浮现，两个画面重叠了一秒——几十年就在这一秒里过去了。',
+    art: () => <g>
+      <Op v="1;1;0;0" kt="0;.36;.64;1"><Room who={3} /></Op>
+      <Op v="0;0;1;1" kt="0;.36;.64;1"><Room who={1} /></Op>
+      <Timeline cuts={[0.5]} label="A、B 重叠约 1 秒 · 叠化" />
+    </g>,
+  },
+  'cut-cross': {
+    note: '一边是赶车的人，一边是正在关上的车门，来回切、每次都更短——两条线越切越快，最后撞在同一个时刻。',
+    art: () => {
+      const b = [0, 0.26, 0.46, 0.62, 0.74, 0.83, 0.9, 0.95, 1];
+      const Train = () => <g>
+        <rect className="sa-wall" x={0} y={0} width={W} height={180} />
+        <path className="sa-line" d="M0 140 L320 140" />
+        <rect className="sa-body" x={30} y={30} width={260} height={110} rx={8} />
+        <rect className="sa-dark" x={128} y={44} width={64} height={96} />
+        <g><T type="translate" v="-34 0;0 0" d={6} ease={false} /><rect className="sa-body" x={128} y={44} width={32} height={96} /></g>
+        <g><T type="translate" v="34 0;0 0" d={6} ease={false} /><rect className="sa-body" x={160} y={44} width={32} height={96} /></g>
+        <circle className="sa-rec" cx={250} cy={56} r={4}><A a="opacity" v="1;0;1" d={0.6} discrete /></circle>
+        <Txt x={60} y={60} s={9} c="sa-txt sa-txt-acc">B 线</Txt>
+      </g>;
+      return <g>
+        {b.slice(0, -1).map((t, i) => <Show key={i} t0={t} t1={b[i + 1]}>{i % 2 ? <Train /> : <g><Run /><Txt x={20} y={24} s={9} c="sa-txt sa-txt-acc">A 线</Txt></g>}</Show>)}
+        <Timeline cuts={b.slice(1, -1)} label="两条线交替 · 越切越短" />
+      </g>;
+    },
+  },
+  'cut-jl': {
+    note: '画面还停在走廊，下一场教室里的上课铃声和说话声已经先进来了，一秒后画面才切过去——声音替画面「开门」，这叫 J 剪辑。',
+    art: () => <g>
+      <Show t0={0} t1={0.6}><Street /></Show>
+      <Show t0={0.6} t1={1}><Room /></Show>
+      <g transform="translate(0 0)">
+        <rect className="sa-panel" x={18} y={134} width={284} height={40} rx={3} />
+        <Txt x={24} y={146} s={6}>画面</Txt><Txt x={24} y={165} s={6}>声音</Txt>
+        <rect className="sa-clip" x={50} y={140} width={146} height={8} rx={1} /><rect className="sa-clip2" x={198} y={140} width={98} height={8} rx={1} />
+        <rect className="sa-clip" x={50} y={159} width={102} height={8} rx={1} /><rect className="sa-accf" x={154} y={159} width={142} height={8} rx={1} />
+        <path className="sa-acc sa-dash" d="M153 156 L153 170 M197 136 L197 150" />
+        <g><T type="translate" v="0 0;246 0" d={D} ease={false} /><path className="sa-acc" d="M50 136 L50 172" /></g>
+      </g>
+      <Show t0={0.42} t1={0.6}><Txt x={160} y={124} a="middle" s={8} c="sa-txt sa-txt-acc">♪ 下一场的声音先进来了</Txt></Show>
+    </g>,
+  },
+  'cut-action': {
+    note: '全景里手伸向门把手，动作做到一半就切到门把手特写，手接着把门拉开——切点藏在动作里，观众只看到一个连贯的开门。',
+    art: () => <g>
+      <Show t0={0} t1={0.5}>
+        <rect className="sa-wall" x={0} y={0} width={W} height={180} />
+        <path className="sa-line" d="M0 150 L320 150" />
+        <rect className="sa-bld" x={170} y={30} width={70} height={120} /><circle className="sa-acc" cx={180} cy={92} r={3} />
+        <Person x={130} y={150} h={110} face />
+        <path className="sa-body"><A a="d" v="M143 70 L150 92 L153 92 L147 70 Z;M143 70 L175 90 L177 94 L144 74 Z;M143 70 L175 90 L177 94 L144 74 Z" kt="0;.4;1" d={3} /></path>
+      </Show>
+      <Show t0={0.5} t1={1}>
+        <rect className="sa-wall" x={0} y={0} width={W} height={180} />
+        <g><T type="skewY" v="0;0;-6;-6" kt="0;.55;.85;1" /><rect className="sa-bld" x={100} y={-20} width={240} height={220} /></g>
+        <circle className="sa-body" cx={170} cy={92} r={22} /><circle className="sa-acc" cx={170} cy={92} r={8} />
+        <g><T type="rotate" v="0 170 92;0 170 92;-35 170 92;-35 170 92" kt="0;.55;.75;1" /><rect className="sa-body" x={164} y={86} width={70} height={12} rx={6} /></g>
+        <g><T type="translate" v="0 0;0 0;0 18;0 18" kt="0;.55;.75;1" /><path className="sa-body" d="M330 140 C290 130 250 110 222 100 C212 96 208 104 214 110 C226 120 260 140 300 170 Z" /><path className="sa-line" d="M220 98 C224 92 232 92 236 98 M226 102 C230 96 238 96 242 102" /></g>
+      </Show>
+      <Timeline cuts={[0.5]} label="剪在动作进行到一半" />
+    </g>,
+  },
+  'sound-score': {
+    note: '画面不变，音乐慢慢铺进来、在情绪高点涨满、最后回落：同一个日落，配了乐就从「好看」变成了「想哭」。',
+    art: () => <g>
+      <Sea />
+      <Person x={110} y={102} h={40} />
+      {[0, 1, 2, 3, 4].map((i) => <text key={i} className="sa-note" x={60 + i * 50} y={90} style={{fontSize: 14}}>{i % 2 ? '♪' : '♫'}<T type="translate" v="0 30;0 -60" d={4} ease={false} begin={`${-i * 0.8}s`} /><A a="opacity" v="0;1;0" d={4} begin={`${-i * 0.8}s`} /></text>)}
+      <Wave label="配乐 · 渐强到高点再回落" amp={(t) => +(Math.min(1, 0.15 + Math.pow(Math.sin(Math.min(t / 0.75, 1) * Math.PI / 2), 2) * (t < 0.75 ? 1 : 1 - (t - 0.75) * 3)) * (0.75 + 0.25 * Math.abs(Math.sin(t * 40)))).toFixed(3)} />
+    </g>,
+  },
+  'sound-vo': {
+    note: '画面里的人一句话没说，声音从画外传来，字幕一句句出现：旁白讲的是画面拍不出来的东西——回忆、想法、结局。',
+    art: () => <g>
+      <rect className="sa-wall" x={0} y={0} width={W} height={180} />
+      <Ridge y={96} amp={14} seed={21} c="sa-hill2" /><path className="sa-line" d="M0 112 L320 112" />
+      <Walker x={160} y={112} h={70} />
+      <g transform="translate(28 24)"><rect className="sa-acc" x={-4} y={-8} width={8} height={13} rx={4} /><path className="sa-acc" d="M-7 0 C-7 7 7 7 7 0 M0 7 L0 11" /><Txt x={12} y={4} s={7} c="sa-txt sa-txt-acc">VO 画外音</Txt></g>
+      <Show t0={0.05} t1={0.5}><Txt x={160} y={128} a="middle" s={9} c="sa-sub">那年夏天，我第一次离开家。</Txt></Show>
+      <Show t0={0.55} t1={0.98}><Txt x={160} y={128} a="middle" s={9} c="sa-sub">站台上，妈妈一直没有挥手。</Txt></Show>
+      <Wave label="画外音 · 画面里没人开口" amp={(t) => ((t > 0.05 && t < 0.45) || (t > 0.55 && t < 0.93) ? +(0.3 + 0.5 * Math.abs(Math.sin(t * 47))).toFixed(3) : 0.05)} />
+    </g>,
+  },
+  'img-tex-long-exposure': {
+    note: '快门开了 30 秒：车灯拖成一条条连续的红白光轨，楼和路灯纹丝不动——动的东西变成线，不动的东西依然清楚。',
+    art: () => <g>
+      <rect className="sa-dark" x={0} y={0} width={W} height={180} />
+      {Array.from({length: 18}, (_, i) => <circle key={i} className="sa-subj" cx={(i * 59) % 320} cy={(i * 23) % 60} r={0.6} opacity={0.5} />)}
+      <Skyline x={-20} w={360} base={100} seed={36} hMin={30} hMax={80} lit={0.45} />
+      <path className="sa-body" d="M0 180 C80 150 120 120 160 112 C200 104 260 104 320 100 L320 110 C260 116 210 116 170 124 C130 134 90 160 40 180 Z" />
+      {[[0, '#ff6a5a'], [3, '#ff8a6a'], [8, '#fff4e0'], [11, '#ffe8c8']].map(([o, c], i) => <path key={i} d={`M${-10 + (o as number)} 180 C${80 + (o as number)} ${150 - (o as number) * 0.6} ${120 + (o as number)} ${121 - (o as number) * 0.5} 160 ${113 + (o as number) * 0.2} C200 ${105 + (o as number) * 0.4} 260 ${105 + (o as number) * 0.3} 330 ${101 + (o as number) * 0.3}`} fill="none" stroke={c as string} strokeWidth={1.4} strokeDasharray="60 14" opacity={0.85}><A a="stroke-dashoffset" v={i < 2 ? '0;-148' : '0;148'} d={1.2} ease={false} /></path>)}
+      <Lamp x={60} y={160} s={1.2} /><Lamp x={240} y={108} s={0.6} />
+      <Txt x={300} y={170} a="end" s={7}>快门 30 秒</Txt>
     </g>,
   },
 };
