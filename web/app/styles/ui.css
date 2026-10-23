@@ -368,10 +368,11 @@ button { font: inherit; color: inherit; }
 .pill {
   flex: 0 0 auto;
   display: inline-flex;
-  align-items: baseline;
+  align-items: center;
   gap: 5px;
   height: 26px;
   padding: 0 9px;
+  line-height: 1;
   border: 1px solid var(--line);
   border-radius: 999px;
   background: none;
@@ -386,6 +387,7 @@ button { font: inherit; color: inherit; }
   font-size: 9px;
   color: var(--ink-4);
   font-variant-numeric: tabular-nums;
+  line-height: 1;
 }
 .pill:hover { color: var(--ink); border-color: var(--line-2); }
 .pill[aria-pressed="true"] {
